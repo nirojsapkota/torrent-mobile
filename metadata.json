@@ -1,0 +1,6 @@
+{
+  "name": "Android Torrent Client",
+  "description": "An Android-styled torrent downloader interface inspired by uTorrent, featuring interactive downloads, live ETA countdowns, seeders ratios, peer lists, speed charts, and an AI-powered torrent search/analyzer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

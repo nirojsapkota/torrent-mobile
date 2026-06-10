@@ -1,0 +1,5 @@
+{
+	"appId": "com.androidtorrent.client",
+	"appName": "Torrent Client",
+	"webDir": "dist"
+}

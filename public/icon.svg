@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#020617;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="logoGrad" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+      <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <!-- Rounded Launcher Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+  <!-- uTorrent-style glowing green circle -->
+  <circle cx="256" cy="256" r="180" fill="url(#logoGrad)" stroke="#22c55e" stroke-width="10" />
+  <!-- Elegant vector representation of micro 'µ' character -->
+  <g fill="#ffffff">
+    <!-- Descender Line on Left -->
+    <path d="M185 240 L185 390 C185 395, 181 400, 175 400 L165 400 C159 400, 155 395, 155 390 L155 240 C155 234, 159 230, 165 230 L175 230 C181 230, 185 234, 185 240 Z" />
+    <!-- Main stem + loop -->
+    <path d="M185 290 C185 340, 230 350, 255 350 C290 350, 315 325, 315 285 L315 190 C315 184, 319 180, 325 180 L335 180 C341 180, 345 184, 345 190 L345 285 C345 350, 295 390, 250 390 C220 390, 195 380, 185 365 L185 375 L185 375 C185 381, 181 385, 175 385 L165 385 C159 385, 155 381, 155 375 L155 365 C155 365, 155 365, 155 365 Z" />
+    <!-- Far right supporting line -->
+    <path d="M315 260 L315 375 C315 381, 319 385, 325 385 L335 385 C341 385, 345 381, 345 375 L345 260 C345 254, 341 250, 335 250 L325 250 C319 250, 315 254, 315 260 Z" />
+  </g>
+</svg>
