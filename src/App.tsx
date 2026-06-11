@@ -149,13 +149,13 @@ const PRESET_TORRENTS = [
 export default function App() {
   // Application torrent lists and filters
   const [torrents, setTorrents] = useState<TorrentItem[]>(() => {
-    const saved = localStorage.getItem("utorrent_history");
+    const saved = localStorage.getItem("opentorrent_history");
     return saved ? JSON.parse(saved) : [];
   });
 
   // Persist history
   useEffect(() => {
-    localStorage.setItem("utorrent_history", JSON.stringify(torrents));
+    localStorage.setItem("opentorrent_history", JSON.stringify(torrents));
   }, [torrents]);
 
   // Main navigation filters
@@ -334,7 +334,7 @@ export default function App() {
 
             if (isDoneNow) {
               // Torrent complete toast notification
-              addToast(`µTorrent: "${tor.name}" finished downloading!`);
+              addToast(`OpenTorrent: "${tor.name}" finished downloading!`);
               return {
                 ...tor,
                 status: "completed" as const,
@@ -441,7 +441,7 @@ export default function App() {
     let size = 350000000; // default 350 MB simulated
     let initialFiles: TorrentFile[] = [
       { name: "downloaded_package.zip", size: 349000000, downloaded: 0, priority: "normal" },
-      { name: "µTorrent_Manifest.txt", size: 1000000, downloaded: 0, priority: "normal" }
+      { name: "OpenTorrent_Manifest.txt", size: 1000000, downloaded: 0, priority: "normal" }
     ];
     let mediaUrl: string | undefined = undefined;
     let targetCat: "media" | "software" | "other" = "other";
@@ -568,7 +568,7 @@ export default function App() {
   };
 
   return (
-    <div id="uTorrent_Root" className="min-h-screen bg-[#070a13] text-gray-100 flex flex-col font-sans relative antialiased max-w-md mx-auto md:max-w-none md:grid md:grid-cols-12 md:h-screen md:overflow-hidden select-none pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    <div id="OpenTorrent_Root" className="min-h-screen bg-[#070a13] text-gray-100 flex flex-col font-sans relative antialiased max-w-md mx-auto md:max-w-none md:grid md:grid-cols-12 md:h-screen md:overflow-hidden select-none pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       
       {/* Toast notifications overlays */}
       <div id="toast-wrapper" className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
@@ -593,7 +593,7 @@ export default function App() {
               <span className="text-white font-extrabold text-lg select-none">µ</span>
             </div>
             <div>
-              <h1 className="text-base font-bold text-white tracking-wide">µTorrent</h1>
+              <h1 className="text-base font-bold text-white tracking-wide">OpenTorrent</h1>
               <p className="text-[10px] text-gray-400 font-medium">BTT Protocol Mobile 4.2</p>
             </div>
           </div>
@@ -1237,7 +1237,7 @@ export default function App() {
             <div className="px-5 py-4 border-b border-gray-900 flex items-center justify-between bg-gray-950/40">
               <div className="flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-bold text-sm text-gray-100">µTorrent Client Settings</h3>
+                <h3 className="font-bold text-sm text-gray-100">OpenTorrent Client Settings</h3>
               </div>
               <button onClick={() => setShowSettingsDrawer(false)} className="p-1 text-gray-500 hover:text-white rounded-lg">
                 <X className="w-4 h-4" />
