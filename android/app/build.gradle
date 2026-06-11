@@ -37,6 +37,11 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     implementation project(':capacitor-app')
+    implementation 'com.frostwire:jlibtorrent:2.0.10-0'
+    implementation 'com.frostwire:jlibtorrent-android-arm64:2.0.10-0'
+    implementation 'com.frostwire:jlibtorrent-android-arm:2.0.10-0'
+    implementation 'com.frostwire:jlibtorrent-android-x86_64:2.0.10-0'
+    implementation 'com.frostwire:jlibtorrent-android-x86:2.0.10-0'
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
