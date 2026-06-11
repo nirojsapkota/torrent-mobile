@@ -21,6 +21,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { 
+            url 'https://dl.frostwire.com/maven' 
+            allowInsecureProtocol = true
+        }
+        maven { url 'https://jitpack.io' }
     }
 }
 
