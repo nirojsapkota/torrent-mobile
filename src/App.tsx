@@ -641,7 +641,7 @@ export default function App() {
   };
 
   return (
-    <div id="uTorrent_Root" className="min-h-screen bg-[#070a13] text-gray-100 flex flex-col font-sans relative antialiased max-w-md mx-auto md:max-w-none md:grid md:grid-cols-12 md:h-screen md:overflow-hidden select-none">
+    <div id="uTorrent_Root" className="min-h-screen bg-[#070a13] text-gray-100 flex flex-col font-sans relative antialiased max-w-md mx-auto md:max-w-none md:grid md:grid-cols-12 md:h-screen md:overflow-hidden select-none pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       
       {/* Toast notifications overlays */}
       <div id="toast-wrapper" className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
@@ -813,21 +813,29 @@ export default function App() {
         {/* Active Torrent Lists Content */}
         <div id="torrent-list-box" className="flex-1 overflow-y-auto p-3 space-y-2.5" style={{ minHeight: "180px" }}>
           {filteredTorrents.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-gray-800/60 rounded-xl my-4 bg-gray-950/20">
-              <div className="w-16 h-16 rounded-full bg-gray-900 flex items-center justify-center mb-4">
-                <DownloadCloud className="w-8 h-8 text-gray-600" />
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-gradient-to-b from-transparent to-gray-950/20 rounded-3xl border border-dashed border-gray-800/40 m-2">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-emerald-500/10 blur-2xl rounded-full"></div>
+                <div className="relative w-20 h-20 rounded-3xl bg-gray-900 flex items-center justify-center border border-gray-800 shadow-2xl">
+                  <DownloadCloud className="w-10 h-10 text-gray-600 animate-pulse" />
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center border-4 border-[#070a13]">
+                  <Plus className="w-4 h-4 text-gray-950 stroke-[3]" />
+                </div>
               </div>
-              <h3 className="text-sm font-semibold text-gray-300">No active torrents found</h3>
-              <p className="text-xs text-gray-500 max-w-xs mt-1">
-                {searchQuery ? "No transfers match your current text query." : "Tap the green addition floating action button directly to kickstart transfers!"}
+              <h3 className="text-lg font-bold text-gray-200">Ready to Download?</h3>
+              <p className="text-xs text-gray-500 max-w-[240px] mt-2 leading-relaxed">
+                {searchQuery
+                  ? "We couldn't find any matches for that search. Try another hash or filename."
+                  : "Your download queue is empty. Paste a magnet link or use the AI Assistant to discover content."}
               </p>
               {!searchQuery && (
                 <button
                   onClick={() => setShowAddDrawer(true)}
-                  className="mt-4 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/10"
+                  className="mt-8 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-bold text-sm rounded-2xl transition-all flex items-center gap-2 shadow-xl shadow-emerald-500/20 active:scale-95 group"
                 >
-                  <Plus className="w-4 h-4" />
-                  Add Torrent Link
+                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                  Add Your First Torrent
                 </button>
               )}
             </div>
@@ -840,74 +848,74 @@ export default function App() {
                 <div
                   key={tor.id}
                   onClick={() => setSelectedTorrentId(matchesSelected ? null : tor.id)}
-                  className={`border rounded-xl transition-all overflow-hidden cursor-pointer ${
+                  className={`border rounded-xl transition-all duration-300 overflow-hidden cursor-pointer ${
                     matchesSelected
-                      ? "bg-gray-900/35 border-emerald-500/40 shadow-md shadow-emerald-500/5"
+                      ? "bg-gray-900/40 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
                       : "bg-[#0b0f1b] border-gray-800/80 hover:border-gray-700/80"
                   }`}
                 >
                   {/* Torrent card upper row */}
-                  <div className="p-3 flex items-start gap-3 relative">
+                  <div className="p-3.5 flex items-start gap-4 relative">
                     
                     {/* Torrent status identifier */}
-                    <div className="mt-1">
+                    <div className="mt-1 shrink-0">
                       {tor.status === "downloading" && (
-                        <div className="w-7 h-7 rounded-full bg-emerald-950/80 flex items-center justify-center">
-                          <Download className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                          <Download className="w-5 h-5 text-emerald-400 animate-bounce" />
                         </div>
                       )}
                       {tor.status === "seeding" && (
-                        <div className="w-7 h-7 rounded-full bg-blue-950/80 flex items-center justify-center">
-                          <Upload className="w-3.5 h-3.5 text-blue-400" />
+                        <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                          <Upload className="w-5 h-5 text-blue-400" />
                         </div>
                       )}
                       {tor.status === "completed" && (
-                        <div className="w-7 h-7 rounded-full bg-emerald-950/80 flex items-center justify-center">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                          <CheckCircle className="w-5 h-5 text-emerald-400" />
                         </div>
                       )}
                       {tor.status === "paused" && (
-                        <div className="w-7 h-7 rounded-full bg-gray-800/80 flex items-center justify-center">
-                          <Pause className="w-3.5 h-3.5 text-gray-400" />
+                        <div className="w-9 h-9 rounded-xl bg-gray-800/50 flex items-center justify-center border border-gray-700/30">
+                          <Pause className="w-5 h-5 text-gray-400" />
                         </div>
                       )}
                     </div>
 
                     {/* Meta stats data */}
                     <div className="flex-1 min-w-0 pr-1">
-                      <h4 className="text-xs font-bold text-gray-200 truncate leading-snug">{tor.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-gray-100 truncate leading-snug">{tor.name}</h4>
+                        {tor.category === "media" && <Play className="w-3 h-3 text-emerald-500 shrink-0" />}
+                      </div>
                       
-                      <div className="flex flex-wrap gap-x-2.5 gap-y-1 mt-1 text-[10px] text-gray-400 font-medium select-none">
-                        <span>{formatBytes(tor.totalSize)}</span>
-                        <span>&middot;</span>
-                        <span className="text-emerald-400 font-semibold">{percent}% completed</span>
-                        {tor.status === "downloading" ? (
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[11px] text-gray-400 font-medium select-none">
+                        <span className="flex items-center gap-1"><HardDrive className="w-3 h-3 opacity-60" /> {formatBytes(tor.totalSize)}</span>
+                        <span className="text-gray-700">|</span>
+                        <span className={`${percent === 100 ? "text-emerald-400" : "text-gray-300"} font-bold`}>{percent}%</span>
+                        {tor.status === "downloading" && (
                           <>
-                            <span>&middot;</span>
-                            <span className="text-orange-400">ETA {formatETA(tor.eta || 0)}</span>
+                            <span className="text-gray-700">|</span>
+                            <span className="text-orange-400 font-bold flex items-center gap-1"><Clock className="w-3 h-3" /> {formatETA(tor.eta || 0)}</span>
                           </>
-                        ) : tor.status === "seeding" ? (
-                          <>
-                            <span>&middot;</span>
-                            <span className="text-blue-400 font-semibold">Ratio {tor.ratio}</span>
-                          </>
-                        ) : null}
+                        )}
                       </div>
 
                       {/* Micro speeds view */}
                       {(tor.status === "downloading" || tor.status === "seeding") && (
-                        <div className="flex gap-3 mt-1.5 text-[10px] items-center text-gray-400 font-mono select-none">
+                        <div className="flex gap-4 mt-2.5 text-[11px] items-center text-gray-400 font-mono select-none">
                           {tor.downloadSpeed > 0 && (
-                            <span className="flex items-center gap-0.5 text-emerald-400">
-                              ↓ {formatBytes(tor.downloadSpeed)}/s
+                            <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                              <ChevronDown className="w-3.5 h-3.5 animate-pulse" /> {formatBytes(tor.downloadSpeed)}/s
                             </span>
                           )}
                           {tor.uploadSpeed > 0 && (
-                            <span className="flex items-center gap-0.5 text-blue-400">
-                              ↑ {formatBytes(tor.uploadSpeed)}/s
+                            <span className="flex items-center gap-1 text-blue-400 font-bold">
+                              <ChevronUp className="w-3.5 h-3.5" /> {formatBytes(tor.uploadSpeed)}/s
                             </span>
                           )}
-                          <span className="text-[9px] text-gray-600">Peers: {tor.peersActive}/{tor.peersTotal}</span>
+                          <span className="text-[10px] text-gray-500 flex items-center gap-1 bg-gray-900/50 px-1.5 py-0.5 rounded">
+                            <Wifi className="w-2.5 h-2.5" /> {tor.peersActive}/{tor.peersTotal}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -961,15 +969,15 @@ export default function App() {
                   </div>
 
                   {/* Standard Android Torrent bar progress */}
-                  <div className="px-3 pb-2.5 select-none">
-                    <div className="h-1.5 w-full bg-gray-950 rounded-full overflow-hidden">
+                  <div className="px-3.5 pb-3.5 select-none">
+                    <div className="h-2 w-full bg-gray-950 rounded-full overflow-hidden border border-gray-900/50 p-[1px]">
                       <div
-                        className={`h-full transition-all duration-1000 ${
+                        className={`h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)] ${
                           tor.status === "paused"
-                            ? "bg-gray-500"
+                            ? "bg-gray-600 shadow-none"
                             : tor.status === "seeding"
-                            ? "bg-blue-500"
-                            : "bg-emerald-400"
+                            ? "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]"
+                            : "bg-gradient-to-r from-emerald-600 to-emerald-400"
                         }`}
                         style={{ width: `${percent}%` }}
                       ></div>
@@ -982,14 +990,13 @@ export default function App() {
         </div>
 
         {/* Floating Action Addition FAB (Optimized Android layout) */}
-        <div className="p-4 flex justify-end shrink-0 select-none">
+        <div className="fixed bottom-6 right-6 md:absolute md:bottom-8 md:right-8 z-40 select-none">
           <button
             id="fab-add-torrent"
             onClick={() => setShowAddDrawer(true)}
-            className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-bold text-sm rounded-full flex items-center gap-2 shadow-xl shadow-emerald-500/20 active:scale-95 transition-all"
+            className="w-14 h-14 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-gray-950 rounded-2xl flex items-center justify-center shadow-[0_8px_25px_-5px_rgba(16,185,129,0.5)] active:scale-90 transition-all group"
           >
-            <Plus className="w-5 h-5 opacity-90 stroke-[3]" />
-            Add Link
+            <Plus className="w-7 h-7 group-hover:rotate-90 transition-transform stroke-[3]" />
           </button>
         </div>
 
@@ -1277,7 +1284,7 @@ export default function App() {
       {/* MODAL DRAWERS: settings configuration popup */}
       {showSettingsDrawer && (
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#090d16] border border-gray-850 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-[#090d16] border border-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col">
             
             <div className="px-5 py-4 border-b border-gray-900 flex items-center justify-between bg-gray-950/40">
               <div className="flex items-center gap-2">
@@ -1367,7 +1374,7 @@ export default function App() {
                     type="text"
                     value={customPath}
                     onChange={(e) => setCustomPath(e.target.value)}
-                    className="w-full bg-gray-950 border border-gray-850 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 font-mono focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 font-mono focus:outline-none focus:border-emerald-500"
                   />
                   <p className="text-[9px] text-gray-500 font-mono">Simulates writing directly into Google Pixel shared flash downloads</p>
                 </div>
@@ -1393,8 +1400,8 @@ export default function App() {
 
       {/* MODAL DRAWERS: addition prompt popup */}
       {showAddDrawer && (
-        <div className="fixed inset-0 bg-black/75 z-5 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#090d16] border border-gray-850 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#090d16] border border-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
             
             <div className="px-5 py-4 border-b border-gray-900 flex items-center justify-between bg-gray-950/40">
               <div className="flex items-center gap-2">
@@ -1419,7 +1426,7 @@ export default function App() {
                       setMagnetInput(e.target.value);
                       setSelectedPreset(null); // break preset lock on manual writing
                     }}
-                    className="w-full h-20 bg-gray-950 border border-gray-850 rounded-lg p-2.5 text-xs text-white placeholder-gray-600 font-mono focus:outline-none focus:border-emerald-500 transition-all resize-none"
+                    className="w-full h-20 bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-600 font-mono focus:outline-none focus:border-emerald-500 transition-all resize-none"
                   />
                 </div>
 
@@ -1440,7 +1447,7 @@ export default function App() {
                           className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
                             active
                               ? "bg-emerald-950/20 border-emerald-500 text-emerald-400"
-                              : "bg-gray-950 border-gray-850/60 hover:border-gray-700 text-gray-400 hover:text-gray-200"
+                              : "bg-gray-950 border-gray-800/60 hover:border-gray-700 text-gray-400 hover:text-gray-200"
                           }`}
                         >
                           <p className="font-bold text-[11px] truncate leading-tight">
@@ -1469,7 +1476,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setShowAddDrawer(false)}
-                  className="flex-1 py-2.5 bg-gray-900 hover:bg-gray-850 text-gray-300 font-bold rounded-lg text-xs"
+                  className="flex-1 py-2.5 bg-gray-900 hover:bg-gray-800 text-gray-300 font-bold rounded-lg text-xs"
                 >
                   Cancel
                 </button>
@@ -1488,12 +1495,12 @@ export default function App() {
 
       {/* AI SEARCH ASSISTANT MODAL (Using @google/genai design pattern features) */}
       {showSearchAssistant && (
-        <div className="fixed inset-0 bg-black/75 z-5o z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#090d16] border border-gray-850 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#090d16] border border-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
             
             <div className="px-5 py-4 border-b border-gray-900 flex items-center justify-between bg-gray-950/40">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4.5 h-4.5 text-rose-450 text-rose-400" />
+                <Sparkles className="w-4.5 h-4.5 text-rose-400" />
                 <h3 className="font-bold text-sm text-gray-100">µTorrent AI Search Assistant</h3>
               </div>
               <button onClick={() => setShowSearchAssistant(false)} className="p-1 text-gray-500 hover:text-white rounded-lg">
@@ -1514,12 +1521,12 @@ export default function App() {
                     placeholder="e.g. Find official Ubuntu ISO..."
                     value={aiSearchQuery}
                     onChange={(e) => setAiSearchQuery(e.target.value)}
-                    className="flex-1 bg-gray-950 border border-gray-850 rounded-lg p-2.5 text-xs text-white placeholder-gray-550 focus:outline-none focus:border-rose-450 focus:border-rose-500"
+                    className="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-rose-500"
                   />
                   <button
                     type="submit"
                     disabled={aiLoading}
-                    className="px-4 bg-rose-550 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all disabled:opacity-50"
+                    className="px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all disabled:opacity-50"
                   >
                     Ask
                   </button>
@@ -1534,7 +1541,7 @@ export default function App() {
               )}
 
               {aiResult && (
-                <div className="bg-gray-950 border border-gray-850 p-4 rounded-xl leading-relaxed whitespace-pre-line text-gray-300 font-mono text-[11px] animate-fade-in relative">
+                <div className="bg-gray-950 border border-gray-800 p-4 rounded-xl leading-relaxed whitespace-pre-line text-gray-300 font-mono text-[11px] animate-fade-in relative">
                   {aiResult}
                   
                   {/* Embedded dynamic quick fill triggers */}
@@ -1573,7 +1580,7 @@ export default function App() {
 
       {/* FULLSCREEN REAL MP4 MULTIMEDIA VIDEO PLAYER TRIGGER */}
       {showActiveVideo && (
-        <div className="fixed inset-0 bg-black/95 z-55 z-[60] flex flex-col justify-between p-4">
+        <div className="fixed inset-0 bg-black/95 z-[60] flex flex-col justify-between p-4">
           <div className="flex justify-between items-center text-white">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
