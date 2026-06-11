@@ -35,8 +35,17 @@ import {
   ShieldCheck,
   Percent,
   Sliders,
-  Sparkles
+  ShieldCheck,
+  ChevronRight
 } from "lucide-react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { registerPlugin } from "@capacitor/core";
+
+interface FileExplorerPlugin {
+  openFolder(options: { path: string }): Promise<void>;
+}
+
+const FileExplorer = registerPlugin<FileExplorerPlugin>("FileExplorer");
 
 // Types definition for our torrent ecosystem
 interface TorrentFile {
@@ -139,106 +148,48 @@ const PRESET_TORRENTS = [
 
 export default function App() {
   // Application torrent lists and filters
-  const [torrents, setTorrents] = useState<TorrentItem[]>([
-    {
-      id: "tor_1",
-      name: "Big Buck Bunny 4K (CC Video Suite)",
-      status: "downloading",
-      infoHash: "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c",
-      addedDate: new Date(Date.now() - 3600000).toLocaleString(),
-      downloadSpeed: 1850000, // 1.85 MB/s
-      uploadSpeed: 45000, // 45 KB/s
-      downloaded: 112000000, // 112 MB
-      uploaded: 4200000,
-      totalSize: 276192000,
-      peersActive: 14,
-      peersTotal: 76,
-      seedsActive: 44,
-      seedsTotal: 284,
-      ratio: 0.037,
-      magnetURI: "magnet:?xt=urn:btih:dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c&dn=BigBuckBunny",
-      category: "media",
-      playableUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      files: [
-        { name: "big_buck_bunny_1080p_h264.mp4", size: 275800000, downloaded: 111600000, priority: "normal" },
-        { name: "bunny_poster_art.png", size: 372000, downloaded: 372000, priority: "normal" },
-        { name: "license_creative_commons_30.txt", size: 20000, downloaded: 20000, priority: "normal" }
-      ],
-      peersList: [
-        { ip: "185.120.44.11", client: "uTorrent/3.5.5", dlSpeed: 450000, ulSpeed: 12000, progress: 41, country: "United States", countryCode: "US" },
-        { ip: "92.42.122.95", client: "qBittorrent/4.6.2", dlSpeed: 820000, ulSpeed: 21000, progress: 67, country: "Germany", countryCode: "DE" },
-        { ip: "201.55.191.13", client: "Transmission/4.0.0", dlSpeed: 580000, ulSpeed: 12000, progress: 12, country: "Brazil", countryCode: "BR" }
-      ],
-      speedHistory: Array.from({ length: 25 }, (_, i) => ({ dl: 1500000 + Math.sin(i / 2) * 400000, ul: 40000 + Math.cos(i) * 5000 }))
-    },
-    {
-      id: "tor_2",
-      name: "Arch Linux Netboot Mini-Image (64-bit)",
-      status: "completed",
-      infoHash: "ea902f4318cfa52bf3386e885d9c22881a5fc54e",
-      addedDate: new Date(Date.now() - 7200000).toLocaleString(),
-      downloadSpeed: 0,
-      uploadSpeed: 125000, // 125 KB/s
-      downloaded: 98416218,
-      uploaded: 150400000,
-      totalSize: 98416218,
-      peersActive: 9,
-      peersTotal: 14,
-      seedsActive: 0,
-      seedsTotal: 95,
-      ratio: 1.52,
-      magnetURI: "magnet:?xt=urn:btih:ea902f4318cfa52bf3386e885d9c22881a5fc54e&dn=ArchLinuxNetboot",
-      category: "software",
-      files: [
-        { name: "archlinux-netboot-2026.06.01.tar.gz", size: 98400000, downloaded: 98400000, priority: "normal" },
-        { name: "gpg_signature.sig", size: 16218, downloaded: 16218, priority: "normal" }
-      ],
-      peersList: [
-        { ip: "103.45.2.190", client: "libtorrent/1.2.19", dlSpeed: 0, ulSpeed: 65000, progress: 99, country: "Japan", countryCode: "JP" },
-        { ip: "77.105.15.82", client: "uTorrent Mobile/2.1", dlSpeed: 0, ulSpeed: 60000, progress: 88, country: "United Kingdom", countryCode: "GB" }
-      ],
-      speedHistory: Array.from({ length: 25 }, (_, i) => ({ dl: 0, ul: 100000 + Math.sin(i / 1.5) * 30000 }))
-    }
-  ]);
+  const [torrents, setTorrents] = useState<TorrentItem[]>(() => {
+    const saved = localStorage.getItem("utorrent_history");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Persist history
+  useEffect(() => {
+    localStorage.setItem("utorrent_history", JSON.stringify(torrents));
+  }, [torrents]);
 
   // Main navigation filters
   const [activeFilter, setActiveFilter] = useState<"all" | "downloading" | "completed" | "paused">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTorrentId, setSelectedTorrentId] = useState<string | null>("tor_1");
+  const [selectedTorrentId, setSelectedTorrentId] = useState<string | null>(null);
   const [activeDetailTab, setActiveDetailTab] = useState<"files" | "peers" | "info" | "traffic">("files");
 
   // Modern UI Dialog overlays
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
-  const [showSearchAssistant, setShowSearchAssistant] = useState(false);
   const [showActiveVideo, setShowActiveVideo] = useState<string | null>(null);
+  const [showFolderPicker, setShowFolderPicker] = useState(false);
+  const [currentPickerPath, setCurrentPickerPath] = useState("/storage/emulated/0");
 
   // New torrent creation inputs
   const [magnetInput, setMagnetInput] = useState("");
   const [customPath, setCustomPath] = useState("/storage/emulated/0/Download");
-  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
 
   // Client speed limitation parameters & power optimization
   const [downloadLimit, setDownloadLimit] = useState<number>(0); // 0 means Unlimited
   const [uploadLimit, setUploadLimit] = useState<number>(0); // 0 means Unlimited
-  const [wifiOnly, setWifiOnly] = useState<boolean>(true);
+  const [wifiOnly, setWifiOnly] = useState<boolean>(false);
   const [batterySaveMode, setBatterySaveMode] = useState<boolean>(true);
   const [disableTimer, setDisableTimer] = useState<boolean>(false);
 
   // Hardware state capture (Battery percentage & Charging feedback)
   const [batteryLevel, setBatteryLevel] = useState<number>(85);
   const [isCharging, setIsCharging] = useState<boolean>(true);
-  const [tempStorage, setTempStorage] = useState<number>(114.8); // GB free
   const [networkType, setNetworkType] = useState<"Wi-Fi" | "Mobile Data">("Wi-Fi");
 
   // Simulated Speed Graphs continuous tracker
   const [globalDlTracker, setGlobalDlTracker] = useState<number[]>(Array.from({ length: 30 }, () => 0));
   const [globalUlTracker, setGlobalUlTracker] = useState<number[]>(Array.from({ length: 30 }, () => 0));
-
-  // AI assistant states
-  const [aiSearchQuery, setAiSearchQuery] = useState("");
-  const [aiResult, setAiResult] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
 
   // Audio effects state
   const [notifications, setNotifications] = useState<{ id: string; msg: string }[]>([]);
@@ -282,6 +233,28 @@ export default function App() {
       getConnType();
       conn.addEventListener("change", getConnType);
     }
+
+    // Deep link handling for magnet: URIs
+    const setupDeepLink = async () => {
+      // Handle app already open
+      CapacitorApp.addListener('appUrlOpen', (data) => {
+        const url = data.url;
+        if (url.startsWith('magnet:')) {
+          processMagnetUri(url);
+        }
+      });
+
+      // Handle app launch from deep link
+      const launchUrl = await CapacitorApp.getLaunchUrl();
+      if (launchUrl && launchUrl.url.startsWith('magnet:')) {
+        processMagnetUri(launchUrl.url);
+      }
+    };
+    setupDeepLink();
+
+    return () => {
+      CapacitorApp.removeAllListeners();
+    };
   }, []);
 
   // Central Physics engine looping every second
@@ -320,7 +293,7 @@ export default function App() {
             const cappedMaxDlSpeed = downloadLimit > 0 ? (downloadLimit * 1000 * 1024) / dlCount : 8 * 1024 * 1024; // normal fast: 8MB/s max
 
             // Random rate fluctuations (+/- 15%)
-            const baseDlSpeed = Math.min(cappedMaxDlSpeed, activeTotalSize / 120); // download takes approx 120 secs
+            const baseDlSpeed = Math.min(cappedMaxDlSpeed, activeTotalSize / 120);
             const currentSpeedScale = 0.85 + Math.random() * 0.3;
             let finalDlSpeed = Math.round(baseDlSpeed * currentSpeedScale);
 
@@ -463,21 +436,7 @@ export default function App() {
     return `${hrs}h ${rm}m`;
   };
 
-  // Click handler to initiate selected preset filling
-  const handlePresetSelect = (idx: number) => {
-    setSelectedPreset(idx);
-    const current = PRESET_TORRENTS[idx];
-    setMagnetInput(`magnet:?xt=urn:btih:${current.hash}&dn=${encodeURIComponent(current.name)}`);
-  };
-
-  // Ingest torrent magnet links
-  const handleAddTorrentSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!magnetInput.trim()) {
-      addToast("Please input a valid torrent magnet link or select a preset.");
-      return;
-    }
-
+  const processMagnetUri = (uri: string) => {
     let name = "Manual Link Transfer Bundle";
     let size = 350000000; // default 350 MB simulated
     let initialFiles: TorrentFile[] = [
@@ -487,32 +446,36 @@ export default function App() {
     let mediaUrl: string | undefined = undefined;
     let targetCat: "media" | "software" | "other" = "other";
 
-    if (selectedPreset !== null) {
-      const preset = PRESET_TORRENTS[selectedPreset];
-      name = preset.name;
-      size = preset.size;
-      mediaUrl = preset.playableUrl;
-      targetCat = preset.category;
-      initialFiles = preset.files.map((file) => ({
-        name: file.name,
-        size: file.size,
-        downloaded: 0,
-        priority: "normal"
-      }));
-    } else {
-      // Parse query parameters simple regex
-      const dnMatch = magnetInput.match(/[?&]dn=([^&]+)/);
-      if (dnMatch) {
-        name = decodeURIComponent(dnMatch[1]).replace(/\+/g, " ");
+    // Check presets first
+    const hashMatch = uri.match(/btih:([a-fA-F0-9]{40})/);
+    const finalHash = hashMatch ? hashMatch[1].toLowerCase() : null;
+
+    if (finalHash) {
+      const presetIdx = PRESET_TORRENTS.findIndex(p => p.hash === finalHash);
+      if (presetIdx !== -1) {
+        const preset = PRESET_TORRENTS[presetIdx];
+        name = preset.name;
+        size = preset.size;
+        mediaUrl = preset.playableUrl;
+        targetCat = preset.category;
+        initialFiles = preset.files.map((file) => ({
+          name: file.name,
+          size: file.size,
+          downloaded: 0,
+          priority: "normal"
+        }));
+      } else {
+        const dnMatch = uri.match(/[?&]dn=([^&]+)/);
+        if (dnMatch) {
+          name = decodeURIComponent(dnMatch[1]).replace(/\+/g, " ");
+        }
       }
     }
 
-    const hashMatch = magnetInput.match(/btih:([a-fA-F0-9]{40})/);
-    const finalHash = hashMatch ? hashMatch[1].toLowerCase() : Math.random().toString(16).substring(2, 42);
+    const infoHash = finalHash || Math.random().toString(16).substring(2, 42);
 
-    // Stop duplicate hashes
-    if (torrents.some((t) => t.infoHash === finalHash)) {
-      addToast("This magnet item is already in your download roster!");
+    if (torrents.some((t) => t.infoHash === infoHash)) {
+      addToast("Torrent already in roster!");
       return;
     }
 
@@ -520,9 +483,9 @@ export default function App() {
       id: `tor_${Date.now()}`,
       name,
       status: "downloading",
-      infoHash: finalHash,
+      infoHash,
       addedDate: new Date().toLocaleString(),
-      downloadSpeed: 1000000, // starts off at 1 MB/s
+      downloadSpeed: 1000000,
       uploadSpeed: 25000,
       downloaded: 0,
       uploaded: 0,
@@ -532,7 +495,7 @@ export default function App() {
       seedsActive: Math.round(5 + Math.random() * 15),
       seedsTotal: Math.round(100 + Math.random() * 300),
       ratio: 0,
-      magnetURI: magnetInput,
+      magnetURI: uri,
       category: targetCat,
       playableUrl: mediaUrl,
       files: initialFiles,
@@ -546,11 +509,19 @@ export default function App() {
 
     setTorrents((prev) => [customTorrent, ...prev]);
     setSelectedTorrentId(customTorrent.id);
-    addToast(`Successfully initialized download sequence!`);
+    addToast(`Started download: ${name.substring(0, 20)}...`);
+  };
 
-    // Reset fields & close modal
+  // Ingest torrent magnet links
+  const handleAddTorrentSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!magnetInput.trim()) {
+      addToast("Please input a valid torrent magnet link.");
+      return;
+    }
+
+    processMagnetUri(magnetInput);
     setMagnetInput("");
-    setSelectedPreset(null);
     setShowAddDrawer(false);
   };
 
@@ -596,50 +567,6 @@ export default function App() {
     addToast(`Set "${fileName}" priority level to ${targetPriority.toUpperCase()}`);
   };
 
-  // Run Google Gemini search assistant query to fetch movie magnet suggestions or peer info
-  const handleAiSearchSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!aiSearchQuery.trim()) return;
-
-    setAiLoading(true);
-    setAiResult(null);
-
-    try {
-      // Connect to server-side Gemini endpoint or generate responses that help user load magnet URLs
-      // Since it is a client-side Vite application, we can use client SDK if configured, or provide highly advanced, custom Gemini-grade intelligent recommendations.
-      // Let's call the actual @google/genai module if available, otherwise fallback on a beautifully formatted responsive simulation that acts extremely realistically.
-      
-      // Let's simulate beautiful real AI results parsing movie metadata instantly!
-      setTimeout(() => {
-        const normalized = aiSearchQuery.toLowerCase();
-        let promptResponse = "";
-
-        if (normalized.includes("ubuntu") || normalized.includes("linux")) {
-          promptResponse = `**Found 1 Verified Open-Source Resource for Linux OS**\n\n**Ubuntu Desktop 24.04 LTS (Noble Numbat)**\n* Size: \`4.11 GB\` | Seeders: \`1,240\` | Peers: \`418\`\n* Info Hash: \`f8a48fc572f260be347cd37dfcc9549cd5409b35\`\n* Torrent verified by Ubuntu Canonical QA network.\n\n[Click here to auto-fill this Torrent directly to Client]`;
-        } else if (normalized.includes("movie") || normalized.includes("sintel") || normalized.includes("bunny")) {
-          promptResponse = `**Found 2 High-Quality Creative Commons Media Torrents**\n\n1. **Big Buck Bunny Cinematic Suite (H.264)**\n   * Size: \`276 MB\` | Seeders: \`284\`\n   * Description: CC-licensed comedy rendering masterpiece, perfect for testing multi-file priority speedups.\n\n2. **Sintel Animated Action Movie (HEVC MKV)**\n   * Size: \`682 MB\` | Seeders: \`142\`\n\n[Select presets in the "+" menu for high-fidelity instant streaming files!]`;
-        } else {
-          promptResponse = `**µTorrent AI Analytics Search: "${aiSearchQuery}"**\n\nVerified 0 direct magnet links on global trackers, but we suggest downloading these official testing archives:\n\n* **Arch Linux Installation Recovery**\n  * Hash: \`ea902f4318cfa52bf3386e885d9c22881a5fc54e\`\n  * Status: High Seeder ratio (95 active nodes)\n\n*You can choose this item immediately in the green Add Download drawer (+).*`;
-        }
-        
-        setAiResult(promptResponse);
-        setAiLoading(false);
-      }, 1200);
-
-    } catch (err) {
-      console.error(err);
-      setAiResult("Dynamic search backend busy. Try again or check network status.");
-      setAiLoading(false);
-    }
-  };
-
-  // Auto-fill preset from search assistant
-  const selectSearchAssistantResult = (presetIndex: number) => {
-    handlePresetSelect(presetIndex);
-    setShowSearchAssistant(false);
-    setShowAddDrawer(true);
-  };
-
   return (
     <div id="uTorrent_Root" className="min-h-screen bg-[#070a13] text-gray-100 flex flex-col font-sans relative antialiased max-w-md mx-auto md:max-w-none md:grid md:grid-cols-12 md:h-screen md:overflow-hidden select-none pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       
@@ -659,28 +586,6 @@ export default function App() {
       {/* Main interactive screen (Vast Left Area for layout, responsive list) */}
       <div id="main-client" className="flex flex-col h-full md:col-span-7 lg:col-span-8 md:border-r border-gray-800 md:bg-[#070a13]">
         
-        {/* Device Status Bar Overlay (Pixel-perfect Android notch integration) */}
-        <div id="telemetry-notch" className="bg-[#05070e] text-[10px] text-gray-400 px-4 py-1.5 flex justify-between items-center border-b border-gray-900/60 font-mono tracking-tight shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-emerald-500 font-bold">&#x25CF;</span>
-            <span>GOOGLE PIXEL CLIENT</span>
-            <span className="text-gray-600">|</span>
-            <span>STORAGE: {tempStorage.toFixed(1)} GB free</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Wifi className="w-3 h-3 text-emerald-400" />
-              <span>{networkType}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Battery className={`w-3.5 h-3.5 ${batteryLevel < 20 && !isCharging ? "text-rose-500 animate-pulse" : "text-emerald-400"}`} />
-              <span className={`${batteryLevel < 20 && !isCharging ? "text-rose-400" : ""}`}>
-                {batteryLevel}% {isCharging ? "⚡" : ""}
-              </span>
-            </span>
-          </div>
-        </div>
-
         {/* Global Toolbar Header */}
         <header id="client-hdr" className="bg-[#090d16] border-b border-gray-800 px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center gap-3">
@@ -710,18 +615,6 @@ export default function App() {
 
           {/* Interactive Tools */}
           <div className="flex items-center gap-2">
-            <button
-              id="btn-ai-assist"
-              onClick={() => setShowSearchAssistant(true)}
-              className="p-2 text-rose-400 hover:bg-rose-500/10 rounded-full transition-colors relative group"
-              title="AI Search Assistant"
-            >
-              <Sparkles className="w-5 h-5 animate-pulse" />
-              <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-              </span>
-            </button>
             <button
               id="btn-settings-toggle"
               onClick={() => setShowSettingsDrawer(true)}
@@ -921,38 +814,57 @@ export default function App() {
                     </div>
 
                     {/* Audio streaming & multimedia direct playing capabilities */}
-                    <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                       
-                      {/* Playback trigger */}
-                      {tor.status === "seeding" || tor.status === "completed" ? (
-                        tor.playableUrl ? (
-                          <button
-                            onClick={() => {
-                              setShowActiveVideo(tor.playableUrl || "");
-                              addToast(`Now streaming completed torrent video on Pixel player`);
-                            }}
-                            className="p-1 px-2.5 bg-emerald-500 hover:bg-emerald-600 text-[#070a13] rounded-md text-[10px] font-bold transition-all flex items-center gap-1"
-                          >
-                            <Volume2 className="w-3 h-3" />
-                            Stream
-                          </button>
-                        ) : (
-                          <span className="px-2 py-0.5 bg-gray-900 border border-gray-800 text-[9px] font-bold uppercase rounded text-emerald-400">
-                            Done
-                          </span>
-                        )
-                      ) : (
+                      {/* Action buttons */}
+                      <div className="flex gap-1">
                         <button
-                          onClick={() => toggleTorrentState(tor.id)}
-                          className={`p-1.5 rounded-lg hover:bg-gray-800 border transition-all ${
-                            tor.status === "paused"
-                              ? "border-emerald-500/20 text-emerald-400"
-                              : "border-gray-800 text-gray-400"
-                          }`}
+                          onClick={async () => {
+                            const path = `${customPath}/${tor.name}`;
+                            try {
+                              await FileExplorer.openFolder({ path });
+                              addToast(`Opening: ${tor.name}`);
+                            } catch (err) {
+                              addToast("Open failed - jumping to parent");
+                              await FileExplorer.openFolder({ path: customPath });
+                            }
+                          }}
+                          className="p-1.5 bg-gray-800 hover:bg-gray-700 text-emerald-400 rounded-lg border border-gray-700 transition-all"
+                          title="Open Folder"
                         >
-                          {tor.status === "paused" ? <Play className="w-3.5 h-3.5 fill-current" /> : <Pause className="w-3.5 h-3.5" />}
+                          <FolderOpen className="w-4 h-4" />
                         </button>
-                      )}
+
+                        {tor.status === "seeding" || tor.status === "completed" ? (
+                          tor.playableUrl ? (
+                            <button
+                              onClick={() => {
+                                setShowActiveVideo(tor.playableUrl || "");
+                                addToast(`Now streaming completed torrent video on Pixel player`);
+                              }}
+                              className="p-1 px-2.5 bg-emerald-500 hover:bg-emerald-600 text-[#070a13] rounded-md text-[10px] font-bold transition-all flex items-center gap-1"
+                            >
+                              <Play className="w-3 h-3 fill-current" />
+                              Play
+                            </button>
+                          ) : (
+                            <span className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold uppercase rounded text-emerald-400">
+                              Done
+                            </span>
+                          )
+                        ) : (
+                          <button
+                            onClick={() => toggleTorrentState(tor.id)}
+                            className={`p-1.5 rounded-lg hover:bg-gray-800 border transition-all ${
+                              tor.status === "paused"
+                                ? "border-emerald-500/20 text-emerald-400"
+                                : "border-gray-800 text-gray-400"
+                            }`}
+                          >
+                            {tor.status === "paused" ? <Play className="w-3.5 h-3.5 fill-current" /> : <Pause className="w-3.5 h-3.5" />}
+                          </button>
+                        )}
+                      </div>
 
                       <button
                         onClick={() => {
@@ -1072,46 +984,68 @@ export default function App() {
                               </p>
                             </div>
                             <span className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${
-                              file.priority === "high" 
+                              file.downloaded >= file.size
+                                ? "bg-emerald-500/20 text-emerald-400"
+                                : file.priority === "high"
                                 ? "bg-amber-500/10 text-amber-400" 
                                 : file.priority === "skip" 
                                 ? "bg-rose-500/10 text-rose-400" 
                                 : "bg-gray-800 text-gray-400"
                             }`}>
-                              {file.priority}
+                              {file.downloaded >= file.size ? "Finished" : file.priority}
                             </span>
                           </div>
 
                           {/* File priority selection checkboxes and progress slide */}
-                          <div className="h-1 w-full bg-gray-950 rounded-full overflow-hidden select-none">
+                          <div className="h-1.5 w-full bg-gray-950 rounded-full overflow-hidden select-none border border-gray-900/50">
                             <div
                               className={`h-full transition-all duration-1000 ${
-                                file.priority === "skip" ? "bg-gray-800" : "bg-emerald-500"
+                                file.priority === "skip" ? "bg-gray-800" : "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.3)]"
                               }`}
                               style={{ width: `${fileCompletePercent}%` }}
                             ></div>
                           </div>
 
-                          <div className="flex items-center gap-1.5 mt-1 pt-1.5 border-t border-gray-900/60 text-[9px] text-gray-400 font-mono overflow-x-auto whitespace-nowrap">
-                            <span className="text-gray-500">SET RATE:</span>
-                            {[
-                              { label: "High", val: "high" },
-                              { label: "Normal", val: "normal" },
-                              { label: "Low", val: "low" },
-                              { label: "Don't DL", val: "skip" }
-                            ].map((opt) => (
-                              <button
-                                key={opt.val}
-                                onClick={() => handleFilePriorityChange(selectedTorrent.id, file.name, opt.val as any)}
-                                className={`px-2 py-0.5 rounded transition-all ${
-                                  file.priority === opt.val
-                                    ? "bg-slate-800 text-emerald-400 font-bold border border-emerald-500/20"
-                                    : "hover:text-gray-200"
-                                }`}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
+                          <div className="flex items-center justify-between mt-1 pt-1.5 border-t border-gray-900/60">
+                            <div className="flex items-center gap-1.5 text-[9px] text-gray-400 font-mono overflow-x-auto whitespace-nowrap scrollbar-hide">
+                              <span className="text-gray-500">SET RATE:</span>
+                              {[
+                                { label: "High", val: "high" },
+                                { label: "Normal", val: "normal" },
+                                { label: "Low", val: "low" },
+                                { label: "Don't DL", val: "skip" }
+                              ].map((opt) => (
+                                <button
+                                  key={opt.val}
+                                  onClick={() => handleFilePriorityChange(selectedTorrent.id, file.name, opt.val as any)}
+                                  className={`px-2 py-0.5 rounded transition-all ${
+                                    file.priority === opt.val
+                                      ? "bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20"
+                                      : "hover:text-gray-200"
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await FileExplorer.openFolder({ path: customPath });
+                                  addToast(`Opening location: ${file.name}`);
+                                } catch (e) {
+                                  addToast("Could not open file explorer");
+                                }
+                              }}
+                              className={`p-1.5 rounded-md transition-all active:scale-90 ${
+                                file.downloaded >= file.size
+                                  ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-gray-950"
+                                  : "bg-gray-800 text-gray-500 hover:text-gray-300"
+                              }`}
+                            >
+                              <FolderOpen className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
                       );
@@ -1165,72 +1099,86 @@ export default function App() {
                   </div>
 
                   {/* SVG Canvas drawing real line graphs dynamically */}
-                  <div className="w-full h-36 bg-gray-950 border border-gray-900 rounded-lg p-2.5 flex items-center justify-center relative shadow-inner">
-                    <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
-                      {/* Grid lines */}
-                      <line x1="0" y1="10" x2="100" y2="10" stroke="#111827" strokeWidth="0.5" strokeDasharray="1,2" />
-                      <line x1="0" y1="20" x2="100" y2="20" stroke="#111827" strokeWidth="0.5" strokeDasharray="1,2" />
-                      <line x1="0" y1="30" x2="100" y2="30" stroke="#111827" strokeWidth="0.5" strokeDasharray="1,2" />
+                  <div className="w-full h-44 bg-[#090e18] border border-gray-900 rounded-xl p-4 flex flex-col relative shadow-inner group">
+                    <div className="flex justify-between items-start mb-2">
+                       <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1">
+                         <Activity className="w-3 h-3 text-emerald-500" />
+                         Live Network
+                       </span>
+                       <div className="flex gap-3">
+                         <div className="flex items-center gap-1.5">
+                           <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                           <span className="text-[9px] font-mono text-emerald-500">DL</span>
+                         </div>
+                         <div className="flex items-center gap-1.5">
+                           <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                           <span className="text-[9px] font-mono text-blue-500">UL</span>
+                         </div>
+                       </div>
+                    </div>
 
-                      {/* Download Speeds path line */}
-                      {(() => {
-                        const maxVal = Math.max(...selectedTorrent.speedHistory.map(h => h.dl), 100000);
-                        const points = selectedTorrent.speedHistory.map((h, index) => {
-                          const x = (index / (selectedTorrent.speedHistory.length - 1)) * 100;
-                          const y = maxVal > 0 ? 40 - (h.dl / maxVal) * 35 : 40;
-                          return `${x},${y}`;
-                        }).join(" ");
+                    <div className="flex-1 relative">
+                      <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        {/* Grid lines */}
+                        <line x1="0" y1="10" x2="100" y2="10" stroke="#1f2937" strokeWidth="0.2" strokeDasharray="2,2" />
+                        <line x1="0" y1="20" x2="100" y2="20" stroke="#1f2937" strokeWidth="0.2" strokeDasharray="2,2" />
+                        <line x1="0" y1="30" x2="100" y2="30" stroke="#1f2937" strokeWidth="0.2" strokeDasharray="2,2" />
 
-                        return (
-                          <>
-                            <polyline fill="none" stroke="#10b981" strokeWidth="1.5" points={points} />
-                            {/* Area fill */}
-                            <polygon
-                              fill="url(#dlAreaGrad)"
-                              opacity="0.1"
-                              points={`0,40 ${points} 100,40`}
-                            />
-                          </>
-                        );
-                      })()}
+                        {/* Download Speeds path line */}
+                        {(() => {
+                          const maxVal = Math.max(...selectedTorrent.speedHistory.map(h => h.dl), 100000);
+                          const points = selectedTorrent.speedHistory.map((h, index) => {
+                            const x = (index / (selectedTorrent.speedHistory.length - 1)) * 100;
+                            const y = maxVal > 0 ? 40 - (h.dl / maxVal) * 35 : 40;
+                            return `${x},${y}`;
+                          }).join(" ");
 
-                      {/* Upload Speeds path line */}
-                      {(() => {
-                        const maxVal = Math.max(...selectedTorrent.speedHistory.map(h => h.ul), 10000);
-                        const points = selectedTorrent.speedHistory.map((h, index) => {
-                          const x = (index / (selectedTorrent.speedHistory.length - 1)) * 100;
-                          const y = maxVal > 0 ? 40 - (h.ul / maxVal) * 35 : 40;
-                          return `${x},${y}`;
-                        }).join(" ");
+                          return (
+                            <>
+                              <polyline fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={points} />
+                              {/* Area fill */}
+                              <polygon
+                                fill="url(#dlAreaGrad)"
+                                opacity="0.15"
+                                points={`0,40 ${points} 100,40`}
+                              />
+                            </>
+                          );
+                        })()}
 
-                        return (
-                          <>
-                            <polyline fill="none" stroke="#3b82f6" strokeWidth="1" strokeDasharray="1,0.5" points={points} />
-                            <polygon
-                              fill="url(#ulAreaGrad)"
-                              opacity="0.05"
-                              points={`0,40 ${points} 100,40`}
-                            />
-                          </>
-                        );
-                      })()}
+                        {/* Upload Speeds path line */}
+                        {(() => {
+                          const maxVal = Math.max(...selectedTorrent.speedHistory.map(h => h.ul), 10000);
+                          const points = selectedTorrent.speedHistory.map((h, index) => {
+                            const x = (index / (selectedTorrent.speedHistory.length - 1)) * 100;
+                            const y = maxVal > 0 ? 40 - (h.ul / maxVal) * 35 : 40;
+                            return `${x},${y}`;
+                          }).join(" ");
 
-                      {/* Defined visual gradients Inside SVG scope */}
-                      <defs>
-                        <linearGradient id="dlAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#10b981" />
-                          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-                        </linearGradient>
-                        <linearGradient id="ulAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#3b82f6" />
-                          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    
-                    <div className="absolute bottom-2 left-2 flex gap-3 text-[8px] font-mono select-none">
-                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Download</span>
-                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> Upload</span>
+                          return (
+                            <>
+                              <polyline fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" points={points} />
+                              <polygon
+                                fill="url(#ulAreaGrad)"
+                                opacity="0.08"
+                                points={`0,40 ${points} 100,40`}
+                              />
+                            </>
+                          );
+                        })()}
+
+                        {/* Defined visual gradients Inside SVG scope */}
+                        <defs>
+                          <linearGradient id="dlAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#10b981" />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                          </linearGradient>
+                          <linearGradient id="ulAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -1367,16 +1315,30 @@ export default function App() {
               </div>
 
               {/* Advanced folder destinations */}
-              <div className="space-y-2">
-                <h4 className="font-bold text-[10px] tracking-wider uppercase text-emerald-400">Default Target Directory</h4>
-                <div className="flex flex-col gap-1.5">
-                  <input
-                    type="text"
-                    value={customPath}
-                    onChange={(e) => setCustomPath(e.target.value)}
-                    className="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 font-mono focus:outline-none focus:border-emerald-500"
-                  />
-                  <p className="text-[9px] text-gray-500 font-mono">Simulates writing directly into Google Pixel shared flash downloads</p>
+              <div className="space-y-3 pt-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-bold text-[10px] tracking-wider uppercase text-emerald-400">Default Target Directory</h4>
+                  <button
+                    onClick={() => setShowFolderPicker(true)}
+                    className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 hover:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md transition-all active:scale-95"
+                  >
+                    <FolderOpen className="w-3 h-3" />
+                    Browse
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={customPath}
+                      onChange={(e) => setCustomPath(e.target.value)}
+                      className="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-[11px] text-white placeholder-gray-500 font-mono focus:outline-none focus:border-emerald-500 transition-all"
+                    />
+                    <div className="absolute right-3 top-2.5">
+                      <HardDrive className="w-4 h-4 text-gray-700" />
+                    </div>
+                  </div>
+                  <p className="text-[9px] text-gray-500 font-mono pl-1">Target folder on internal device storage</p>
                 </div>
               </div>
 
@@ -1430,38 +1392,6 @@ export default function App() {
                   />
                 </div>
 
-                {/* Open-source bundle presets row */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="text-xs font-bold text-gray-300">Or Select a Verified Preset Payload:</label>
-                    <span className="text-[9px] text-emerald-400 font-mono">Loads immediately!</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {PRESET_TORRENTS.map((preset, i) => {
-                      const active = selectedPreset === i;
-                      return (
-                        <div
-                          key={i}
-                          onClick={() => handlePresetSelect(i)}
-                          className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
-                            active
-                              ? "bg-emerald-950/20 border-emerald-500 text-emerald-400"
-                              : "bg-gray-950 border-gray-800/60 hover:border-gray-700 text-gray-400 hover:text-gray-200"
-                          }`}
-                        >
-                          <p className="font-bold text-[11px] truncate leading-tight">
-                            {preset.name.split(" ")[0]} {preset.name.split(" ")[1]}
-                          </p>
-                          <p className="text-[9px] font-mono mt-0.5 opacity-80">{formatBytes(preset.size)}</p>
-                          <p className="text-[8px] font-mono mt-0.5 opacity-60">Seeds: {preset.seeds}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Save destination folder summary */}
                 <div className="bg-gray-950 p-3 rounded-lg border border-gray-900 flex justify-between items-center text-xs">
                   <div>
                     <h5 className="font-bold text-gray-400 text-[10px]">SAVE FOLDER DESTINATION:</h5>
@@ -1489,91 +1419,6 @@ export default function App() {
               </div>
             </form>
 
-          </div>
-        </div>
-      )}
-
-      {/* AI SEARCH ASSISTANT MODAL (Using @google/genai design pattern features) */}
-      {showSearchAssistant && (
-        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#090d16] border border-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
-            
-            <div className="px-5 py-4 border-b border-gray-900 flex items-center justify-between bg-gray-950/40">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4.5 h-4.5 text-rose-400" />
-                <h3 className="font-bold text-sm text-gray-100">µTorrent AI Search Assistant</h3>
-              </div>
-              <button onClick={() => setShowSearchAssistant(false)} className="p-1 text-gray-500 hover:text-white rounded-lg">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4 text-xs overflow-y-auto max-h-[70vh]">
-              
-              <p className="text-gray-400 leading-normal">
-                Ask Gemini to suggest torrent info hashes, discover open-source Linux presets, or search for creative-commons media files dynamically.
-              </p>
-
-              <form onSubmit={handleAiSearchSubmit} className="space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="e.g. Find official Ubuntu ISO..."
-                    value={aiSearchQuery}
-                    onChange={(e) => setAiSearchQuery(e.target.value)}
-                    className="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-rose-500"
-                  />
-                  <button
-                    type="submit"
-                    disabled={aiLoading}
-                    className="px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all disabled:opacity-50"
-                  >
-                    Ask
-                  </button>
-                </div>
-              </form>
-
-              {aiLoading && (
-                <div className="py-8 flex flex-col items-center justify-center gap-2">
-                  <RefreshCw className="w-6 h-6 text-rose-400 animate-spin" />
-                  <p className="text-[10px] text-gray-400 font-mono">Analyzing BitTorrent index dht networks...</p>
-                </div>
-              )}
-
-              {aiResult && (
-                <div className="bg-gray-950 border border-gray-800 p-4 rounded-xl leading-relaxed whitespace-pre-line text-gray-300 font-mono text-[11px] animate-fade-in relative">
-                  {aiResult}
-                  
-                  {/* Embedded dynamic quick fill triggers */}
-                  {(aiSearchQuery.toLowerCase().includes("ubuntu") || aiSearchQuery.toLowerCase().includes("linux")) && (
-                    <button
-                      onClick={() => selectSearchAssistantResult(2)}
-                      className="mt-3 w-full py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/20 hover:text-gray-950 text-emerald-400 font-bold rounded text-[10px] uppercase tracking-wide transition-all"
-                    >
-                      Load Ubuntu Core (4.1 GB)
-                    </button>
-                  )}
-
-                  {(aiSearchQuery.toLowerCase().includes("movie") || aiSearchQuery.toLowerCase().includes("sintel") || aiSearchQuery.toLowerCase().includes("bunny")) && (
-                    <div className="flex flex-col gap-1.5 mt-3">
-                      <button
-                        onClick={() => selectSearchAssistantResult(0)}
-                        className="py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/20 hover:text-gray-950 text-emerald-400 font-bold rounded text-[10px] uppercase transition-all"
-                      >
-                        Load Big Buck Bunny CC Movie (276 MB)
-                      </button>
-                      <button
-                        onClick={() => selectSearchAssistantResult(1)}
-                        className="py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/20 hover:text-gray-950 text-emerald-400 font-bold rounded text-[10px] uppercase transition-all"
-                      >
-                        Load Sintel CC Animation (682 MB)
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-            </div>
           </div>
         </div>
       )}
@@ -1606,6 +1451,121 @@ export default function App() {
 
           <div className="text-center pb-4 text-xs text-gray-400">
             <p>Playing local media cache directly from Pixel virtual memory sandbox.</p>
+          </div>
+        </div>
+      )}
+
+      {/* NATIVE-LIKE FOLDER PICKER MODAL */}
+      {showFolderPicker && (
+        <div className="fixed inset-0 bg-black/80 z-[70] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#0b101b] border border-gray-800 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-scale-up">
+            <div className="px-6 py-5 border-b border-gray-900 bg-gray-950/40 flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-gray-100 flex items-center gap-2">
+                  <FolderOpen className="w-5 h-5 text-emerald-500" />
+                  Select Save Location
+                </h3>
+                <div className="flex items-center gap-1.5 mt-1 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] text-gray-500 font-mono whitespace-nowrap">{currentPickerPath}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFolderPicker(false)}
+                className="p-2 text-gray-500 hover:text-white bg-gray-900 rounded-xl transition-colors shrink-0 ml-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto max-h-[50vh] p-2 space-y-1">
+              {/* Back button if not at root */}
+              {currentPickerPath !== "/storage" && (
+                <button
+                  onClick={() => {
+                    const parts = currentPickerPath.split("/");
+                    parts.pop();
+                    setCurrentPickerPath(parts.join("/"));
+                  }}
+                  className="w-full p-4 flex items-center gap-4 rounded-2xl hover:bg-gray-900/40 transition-all group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gray-950 flex items-center justify-center border border-gray-900">
+                    <ChevronDown className="w-5 h-5 text-gray-500 rotate-90" />
+                  </div>
+                  <p className="text-sm font-bold text-gray-400">.. (Parent Directory)</p>
+                </button>
+              )}
+
+              {/* Simulated directory contents based on depth */}
+              {(() => {
+                if (currentPickerPath === "/storage") {
+                  return [
+                    { name: "emulated", icon: HardDrive, label: "Internal Storage" },
+                    { name: "sdcard1", icon: FolderOpen, label: "SD Card (External)" },
+                    { name: "usb_storage", icon: Settings, label: "USB Drive" },
+                  ];
+                }
+                if (currentPickerPath === "/storage/emulated") {
+                  return [
+                    { name: "0", icon: FolderOpen, label: "User 0 (Primary)" },
+                  ];
+                }
+                if (currentPickerPath === "/storage/emulated/0" || currentPickerPath === "/storage/sdcard1") {
+                  return [
+                    { name: "Download", icon: DownloadCloud },
+                    { name: "Movies", icon: Play },
+                    { name: "Music", icon: Volume2 },
+                    { name: "Pictures", icon: Sparkles },
+                    { name: "Documents", icon: FileText },
+                    { name: "Torrents", icon: HardDrive },
+                    { name: "Android", icon: Settings },
+                  ];
+                }
+                return [
+                  { name: "Completed", icon: CheckCircle },
+                  { name: "In Progress", icon: Activity },
+                  { name: "Backups", icon: ShieldCheck },
+                  { name: "Media Cache", icon: FolderOpen },
+                ];
+              })().map((folder) => (
+                <button
+                  key={folder.name}
+                  onClick={() => {
+                    setCurrentPickerPath(`${currentPickerPath}/${folder.name}`);
+                  }}
+                  className="w-full p-4 flex items-center justify-between rounded-2xl hover:bg-gray-900/60 transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center border border-gray-800 group-hover:border-emerald-500/30 group-hover:bg-emerald-500/5 transition-all">
+                      <folder.icon className="w-5 h-5 text-gray-500 group-hover:text-emerald-400 transition-colors" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-gray-300 group-hover:text-white">{(folder as any).label || folder.name}</p>
+                      <p className="text-[10px] text-gray-500 font-mono">{currentPickerPath}/{folder.name}</p>
+                    </div>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-700 -rotate-90" />
+                </button>
+              ))}
+            </div>
+
+            <div className="p-5 bg-gray-950/80 border-t border-gray-900 flex gap-3">
+               <button
+                onClick={() => setShowFolderPicker(false)}
+                className="flex-1 py-3 text-xs font-bold text-gray-400 hover:text-white transition-colors"
+               >
+                 Cancel
+               </button>
+               <button
+                onClick={() => {
+                  setCustomPath(currentPickerPath);
+                  setShowFolderPicker(false);
+                  addToast(`Location confirmed: ${currentPickerPath}`);
+                }}
+                className="flex-[2] py-3 bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-bold rounded-2xl text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+               >
+                 Use This Folder
+               </button>
+            </div>
           </div>
         </div>
       )}
