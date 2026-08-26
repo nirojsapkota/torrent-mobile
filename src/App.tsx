@@ -556,7 +556,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-base font-bold text-white tracking-wide">OpenTorrent</h1>
-              <p className="text-[10px] text-gray-400 font-medium">BTT Protocol ©Niroj</p>
+              <p className="text-[10px] text-gray-400 font-medium">BTT Protocol Engine</p>
             </div>
           </div>
 
