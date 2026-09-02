@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.androidtorrent.client",
+  "applicationId": "com.opentorrent.client",
   "variantName": "release",
   "elements": [
     {

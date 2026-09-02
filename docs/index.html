@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy - openTorrent</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                dark: '#090d16',
+                card: '#111827',
+                accent: '#10b981', // Emerald 500
+                accentHover: '#34d399', // Emerald 400
+                text: '#f3f4f6', // Gray 100
+                textMuted: '#9ca3af', // Gray 400
+                border: '#1f2937' // Gray 800
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Smooth scroll behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Custom scrollbar design */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #090d16;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1f2937;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #10b981;
+      }
+      /* Sidebar Active link styling */
+      .toc-link.active {
+        color: #10b981;
+        border-left-color: #10b981;
+        font-weight: 600;
+        background-color: rgba(16, 185, 129, 0.05);
+      }
+    </style>
+  </head>
+  <body class="bg-brand-dark text-brand-text font-sans selection:bg-brand-accent selection:text-brand-dark antialiased">
+    
+    <!-- Top Decorative Gradient -->
+    <div class="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-brand-accent/10 to-transparent pointer-events-none z-0"></div>
+
+    <div class="relative z-10 min-h-screen flex flex-col">
+      <!-- Navbar Header -->
+      <header class="border-b border-brand-border/60 bg-brand-dark/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-accent/20 to-brand-accent/40 flex items-center justify-center border border-brand-accent/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+              <!-- Custom Emerald Arrow/Shield Icon resembling torrent + security -->
+              <svg class="w-5 h-5 text-brand-accent animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+            <div>
+              <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">openTorrent</span>
+              <span class="ml-1.5 px-2 py-0.5 text-[10px] font-semibold text-brand-accent bg-brand-accent/10 border border-brand-accent/20 rounded-full uppercase tracking-wider">Mobile App</span>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <a href="https://github.com/niroj-sapkota/torrent-mobile" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-brand-textMuted hover:text-white transition-colors duration-200 flex items-center space-x-1.5">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+              </svg>
+              <span class="hidden sm:inline">GitHub</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Layout -->
+      <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Left Sidebar (Desktop Table of Contents) -->
+        <aside class="hidden lg:block lg:col-span-1">
+          <div class="sticky top-24 space-y-6">
+            <div class="px-2">
+              <h2 class="text-xs font-bold uppercase tracking-widest text-brand-accent mb-4">On This Page</h2>
+              <nav class="space-y-1 border-l-2 border-brand-border/60">
+                <a href="#intro" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150 active">Introduction</a>
+                <a href="#collect" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">1. Collection</a>
+                <a href="#torrent-info" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">2. Network & Torrent</a>
+                <a href="#files" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">3. Files & Storage</a>
+                <a href="#personal" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">4. Personal Data</a>
+                <a href="#third-party" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">5. Third-Party</a>
+                <a href="#sharing" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">6. Data Sharing</a>
+                <a href="#security" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">7. Security</a>
+                <a href="#children" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">8. Children</a>
+                <a href="#responsibilities" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">9. Responsibilities</a>
+                <a href="#changes" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">10. Changes</a>
+                <a href="#contact" class="toc-link block pl-4 py-1.5 text-sm text-brand-textMuted hover:text-white hover:border-brand-accent/50 border-l-2 border-transparent -ml-[2px] transition-all duration-150">11. Contact Us</a>
+              </nav>
+            </div>
+
+            <!-- Download App Callout -->
+            <div class="p-5 rounded-2xl bg-gradient-to-b from-brand-card to-[#0e1422] border border-brand-border/80 flex flex-col space-y-4">
+              <div class="flex items-center space-x-2 text-brand-accent">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                <span class="text-sm font-semibold">100% Private Tool</span>
+              </div>
+              <p class="text-xs text-brand-textMuted leading-relaxed">
+                openTorrent does not use telemetry, analytics, or external trackers. Everything stays local.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Content Area (Actual Privacy Policy) -->
+        <article class="col-span-1 lg:col-span-3 space-y-10">
+          
+          <!-- Document Header -->
+          <div id="intro" class="pb-8 border-b border-brand-border/60">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
+              Privacy Policy for openTorrent
+            </h1>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-brand-textMuted">
+              <span class="flex items-center">
+                <svg class="w-4 h-4 mr-1.5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Last updated: <strong class="text-white ml-1">September 2, 2026</strong>
+              </span>
+              <span class="hidden sm:inline text-brand-border">|</span>
+              <span class="flex items-center text-brand-accent bg-brand-accent/5 border border-brand-accent/10 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                Effective Immediately
+              </span>
+            </div>
+            
+            <div class="mt-8 prose prose-invert max-w-none text-brand-textMuted leading-relaxed space-y-4 text-[15px] sm:text-base">
+              <p>
+                <strong>openTorrent</strong> ("we", "our", or "the App") is a free, open-source Android application that allows users to download and manage torrent files.
+              </p>
+              <p>
+                We respect your privacy and are committed to being transparent about how the App handles information.
+              </p>
+            </div>
+          </div>
+
+          <!-- Section 1 -->
+          <section id="collect" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">1</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Information We Collect</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                openTorrent does not intentionally collect, store, or sell personal information.
+              </p>
+              <p>
+                The App may access certain information on your device only when necessary to provide its functionality, including:
+              </p>
+              <ul class="list-disc pl-5 space-y-2 text-brand-text">
+                <li>Torrent files or magnet links that you choose to open or use.</li>
+                <li>Files and folders selected by you as download locations.</li>
+                <li>Network information required to connect to peers and download torrent content.</li>
+                <li>Device storage required to save downloaded files.</li>
+              </ul>
+              <p>
+                We do not require you to create an account or provide your name, email address, phone number, or other personal information to use the App.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 2 -->
+          <section id="torrent-info" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">2</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Torrent and Network Information</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                When you use a BitTorrent application, your device may communicate with other BitTorrent peers over the internet.
+              </p>
+              <p>
+                As part of the BitTorrent protocol, your IP address may be visible to other peers participating in the same torrent swarm. This communication is necessary for the BitTorrent protocol to function and is not information that openTorrent independently collects or stores.
+              </p>
+              <p>
+                openTorrent does not operate or control the torrent trackers, peer-to-peer networks, or content that users access through the App.
+              </p>
+              <p class="italic text-brand-accent/80 font-medium">
+                Users are responsible for ensuring that their use of torrents complies with applicable laws and regulations.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 3 -->
+          <section id="files" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">3</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Files and Storage</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                openTorrent may request access to device storage or use Android's file access mechanisms so that you can:
+              </p>
+              <ul class="list-disc pl-5 space-y-1.5 text-brand-text">
+                <li>Select torrent files.</li>
+                <li>Select download locations.</li>
+                <li>Save downloaded content.</li>
+                <li>Manage files downloaded through the App.</li>
+              </ul>
+              <p>
+                The App does not upload your personal files to us. Downloaded content is stored on your device or in a location selected by you.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 4 -->
+          <section id="personal" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">4</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Personal Information</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                We do not intentionally collect or store personal information such as:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-brand-text mt-2 font-medium">
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Name</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Email address</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Phone number</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Postal address</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Contacts</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Photos or personal documents</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Account passwords</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-red-500 text-lg">✕</span>
+                  <span>Payment information</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 5 -->
+          <section id="third-party" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">5</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Third-Party Services</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                openTorrent may communicate with third-party services when required for functionality such as torrent trackers, peer discovery, or other network operations.
+              </p>
+              <p>
+                These third-party services operate independently from openTorrent and may process information according to their own privacy policies. We recommend reviewing the privacy policies of any third-party services you use through the App.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 6 -->
+          <section id="sharing" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">6</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Data Sharing</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                We do not sell, rent, or trade users' personal information.
+              </p>
+              <p>
+                We do not intentionally share personal information with third parties.
+              </p>
+              <p>
+                Information exchanged through the BitTorrent protocol, including your IP address, may be visible to other peers as an inherent part of peer-to-peer communication.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 7 -->
+          <section id="security" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">7</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Data Security</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                Because openTorrent does not maintain a centralized account or personal-information database, there is no openTorrent user account database containing your personal information.
+              </p>
+              <p>
+                However, no internet transmission or electronic storage system can be guaranteed to be completely secure. Users should take appropriate precautions when downloading or sharing files over the internet.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 8 -->
+          <section id="children" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">8</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Children's Privacy</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                openTorrent is not specifically directed toward children. We do not knowingly collect personal information from children.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 9 -->
+          <section id="responsibilities" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">9</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Your Responsibilities</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                openTorrent is a tool for peer-to-peer file transfers. Users are responsible for:
+              </p>
+              <ul class="list-disc pl-5 space-y-1.5 text-brand-text">
+                <li>The torrent files and magnet links they use.</li>
+                <li>The content they download or share.</li>
+                <li>Complying with copyright laws and other applicable laws.</li>
+                <li>Ensuring that they have the appropriate rights or permissions to download or distribute content.</li>
+              </ul>
+              <p>
+                We do not control or endorse content distributed through the BitTorrent network.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 10 -->
+          <section id="changes" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">10</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Changes to This Privacy Policy</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                We may update this Privacy Policy from time to time. When changes are made, we will update the "Last updated" date at the top of this policy. Continued use of openTorrent after changes are made constitutes acceptance of the updated Privacy Policy.
+              </p>
+            </div>
+          </section>
+
+          <!-- Section 11 -->
+          <section id="contact" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center space-x-3">
+              <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-bold text-sm">11</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Contact Us</h2>
+            </div>
+            <div class="pl-11 text-brand-textMuted leading-relaxed space-y-3">
+              <p>
+                If you have questions about this Privacy Policy or openTorrent, you can contact us at:
+              </p>
+              <div class="p-5 rounded-2xl bg-gradient-to-r from-brand-card to-brand-card/40 border border-brand-border/60 max-w-md mt-4 space-y-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="block text-xs uppercase text-brand-textMuted font-bold tracking-wider">Email Support</span>
+                    <a href="mailto:nirojsapkota15@gmail.com" class="text-sm font-semibold text-brand-accent hover:underline">nirojsapkota15@gmail.com</a>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="block text-xs uppercase text-brand-textMuted font-bold tracking-wider">Application</span>
+                    <span class="text-sm font-semibold text-white">openTorrent Mobile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </article>
+      </main>
+
+      <!-- Footer -->
+      <footer class="border-t border-brand-border/60 bg-brand-dark/40 py-8 text-center text-xs text-brand-textMuted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+          <p>&copy; 2026 openTorrent. All rights reserved.</p>
+          <p class="text-[10px] uppercase tracking-wider text-brand-border">Built with precision for extreme privacy and transparency</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Active Section TOC Highlighter Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('section, div[id="intro"]');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        window.addEventListener('scroll', () => {
+          let currentId = 'intro';
+          sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= (sectionTop - 150)) {
+              currentId = section.getAttribute('id');
+            }
+          });
+
+          tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentId}`) {
+              link.classList.add('active');
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
