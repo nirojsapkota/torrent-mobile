@@ -50,7 +50,11 @@ OpenTorrent is a high-performance, open-source BitTorrent client for Android, bu
     ```
 4.  **Run on Android**:
     Open the `android` folder in Android Studio and run the `app` module on your device or emulator.
-
+5. Change code and build and re-run
+    ```
+    npm run build #build
+    npx cap sync android #copy build to android folder
+    ```
 ## 📱 Permissions
 The app requires the following permissions for full functionality:
 *   `INTERNET`: For P2P communication.

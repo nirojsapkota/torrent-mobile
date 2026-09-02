@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.androidtorrent.client"
+    namespace = "com.opentorrent.client"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.androidtorrent.client"
+        applicationId "com.opentorrent.client"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

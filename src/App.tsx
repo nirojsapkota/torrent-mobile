@@ -551,9 +551,7 @@ export default function App() {
         {/* Global Toolbar Header */}
         <header id="client-hdr" className="bg-[#090d16] border-b border-gray-800 px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <span className="text-white font-extrabold text-lg select-none">µ</span>
-            </div>
+            <img src="/icon.svg" alt="OpenTorrent Icon" className="w-8 h-8 rounded-lg shadow-lg" />
             <div>
               <h1 className="text-base font-bold text-white tracking-wide">OpenTorrent</h1>
               <p className="text-[10px] text-gray-400 font-medium">BTT Protocol Engine</p>

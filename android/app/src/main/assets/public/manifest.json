@@ -1,13 +1,16 @@
 {
-  "name": "uTorrent Mobile Client",
-  "short_name": "uTorrent",
-  "description": "Android Torrent Client & Speed Dashboard inspired by uTorrent.",
+  "name": "OpenTorrent",
+  "short_name": "OpenTorrent",
+  "description": "Android Torrent Client & Speed Dashboard.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#090d16",
   "theme_color": "#10b981",
   "orientation": "portrait",
-  "categories": ["utilities", "productivity"],
+  "categories": [
+    "utilities",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "/icon.svg",

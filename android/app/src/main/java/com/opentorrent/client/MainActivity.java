@@ -1,4 +1,4 @@
-package com.androidtorrent.client;
+package com.opentorrent.client;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
